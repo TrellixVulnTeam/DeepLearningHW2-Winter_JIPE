@@ -14,7 +14,6 @@ ACTIVATIONS = {
     None: nn.Identity,
 }
 
-
 # Default keyword arguments to pass to activation class constructors, e.g.
 # activation_cls(**ACTIVATION_DEFAULT_KWARGS[name])
 ACTIVATION_DEFAULT_KWARGS = defaultdict(
@@ -33,7 +32,7 @@ class MLP(nn.Module):
     """
 
     def __init__(
-        self, in_dim: int, dims: Sequence[int], nonlins: Sequence[Union[str, nn.Module]]
+            self, in_dim: int, dims: Sequence[int], nonlins: Sequence[Union[str, nn.Module]]
     ):
         """
         :param in_dim: Input dimension.
@@ -55,7 +54,25 @@ class MLP(nn.Module):
         #  - Either instantiate the activations based on their name or use the provided
         #    instances.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        super().__init__()
+        all_dims = [in_dim, *dims]
+        layers = []
+        layer = 0
+        for in_dim, out_dim in zip(all_dims[:-1], all_dims[1:]):
+            if not (type(nonlins[layer]) is str):
+                layers += [
+                    nn.Linear(in_dim, out_dim, bias=True),
+                    nonlins[layer]
+                ]
+            else:
+                layers += [
+                    nn.Linear(in_dim, out_dim, bias=True),
+                    ACTIVATIONS[nonlins[layer]]()
+                ]
+            layer += 1
+
+        # Sequential is a container for layers
+        self.fc_layers = nn.Sequential(*layers)
         # ========================
 
     def forward(self, x: Tensor) -> Tensor:
@@ -66,5 +83,8 @@ class MLP(nn.Module):
         # TODO: Implement the model's forward pass. Make sure the input and output
         #  shapes are as expected.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        assert x.shape[1] == self.in_dim
+        y_l =  torch.stack([self.fc_layers(x_i) for x_i in torch.unbind(x, dim=0)], dim=0)
+        assert y_l.shape[1] == self.out_dim
+        return y_l
         # ========================

@@ -25,7 +25,7 @@ class Trainer(abc.ABC):
     """
 
     def __init__(
-        self, model: nn.Module, device: Optional[torch.device] = None,
+            self, model: nn.Module, device: Optional[torch.device] = None,
     ):
         """
         Initialize the trainer.
@@ -39,14 +39,14 @@ class Trainer(abc.ABC):
             model.to(self.device)
 
     def fit(
-        self,
-        dl_train: DataLoader,
-        dl_test: DataLoader,
-        num_epochs: int,
-        checkpoints: str = None,
-        early_stopping: int = None,
-        print_every: int = 1,
-        **kw,
+            self,
+            dl_train: DataLoader,
+            dl_test: DataLoader,
+            num_epochs: int,
+            checkpoints: str = None,
+            early_stopping: int = None,
+            print_every: int = 1,
+            **kw,
     ) -> FitResult:
         """
         Trains the model for multiple epochs with a given training set,
@@ -72,16 +72,19 @@ class Trainer(abc.ABC):
         for epoch in range(num_epochs):
             verbose = False  # pass this to train/test_epoch.
             if print_every > 0 and (
-                epoch % print_every == 0 or epoch == num_epochs - 1
+                    epoch % print_every == 0 or epoch == num_epochs - 1
             ):
                 verbose = True
-            self._print(f"--- EPOCH {epoch+1}/{num_epochs} ---", verbose)
+            self._print(f"--- EPOCH {epoch + 1}/{num_epochs} ---", verbose)
 
             # TODO: Train & evaluate for one epoch
             #  - Use the train/test_epoch methods.
             #  - Save losses and accuracies in the lists above.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            train_acc.append(self.train_epoch(dl_train).accuracy)
+            train_loss.append(self.train_epoch(dl_train).losses)
+            test_acc.append(self.test_epoch(dl_test).accuracy)
+            test_loss.append(self.test_epoch(dl_test).losses)
             # ========================
 
             # TODO:
@@ -90,15 +93,14 @@ class Trainer(abc.ABC):
             #  - Optional: Implement checkpoints. You can use the save_checkpoint
             #    method on this class to save the model to the file specified by
             #    the checkpoints argument.
+            '''
             if best_acc is None or test_result.accuracy > best_acc:
                 # ====== YOUR CODE: ======
-                raise NotImplementedError()
                 # ========================
             else:
                 # ====== YOUR CODE: ======
-                raise NotImplementedError()
                 # ========================
-
+            '''
         return FitResult(actual_num_epochs, train_loss, train_acc, test_loss, test_acc)
 
     def save_checkpoint(self, checkpoint_filename: str):
@@ -163,10 +165,10 @@ class Trainer(abc.ABC):
 
     @staticmethod
     def _foreach_batch(
-        dl: DataLoader,
-        forward_fn: Callable[[Any], BatchResult],
-        verbose=True,
-        max_batches=None,
+            dl: DataLoader,
+            forward_fn: Callable[[Any], BatchResult],
+            verbose=True,
+            max_batches=None,
     ) -> EpochResult:
         """
         Evaluates the given forward-function on batches from the given
@@ -222,11 +224,11 @@ class ClassifierTrainer(Trainer):
     """
 
     def __init__(
-        self,
-        model: Classifier,
-        loss_fn: nn.Module,
-        optimizer: Optimizer,
-        device: Optional[torch.device] = None,
+            self,
+            model: Classifier,
+            loss_fn: nn.Module,
+            optimizer: Optimizer,
+            device: Optional[torch.device] = None,
     ):
         """
         Initialize the trainer.
@@ -255,7 +257,15 @@ class ClassifierTrainer(Trainer):
         #  - Update parameters
         #  - Classify and calculate number of correct predictions
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = self.model.classify(X)
+        diff = y_pred - y
+        num_correct = y.shape[0] - torch.count_nonzero(diff)
+        loss = self.loss_fn(y_pred, y.to(torch.float32))
+        loss.requires_grad = True
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+        batch_loss = loss
         # ========================
 
         return BatchResult(batch_loss, num_correct)
@@ -275,7 +285,12 @@ class ClassifierTrainer(Trainer):
             #  - Forward pass
             #  - Calculate number of correct predictions
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            y_pred = self.model.classify(X)
+            diff = y_pred - y
+            num_correct = y.shape[0] - torch.count_nonzero(diff)
+            loss = self.loss_fn(y_pred, y.to(torch.float32))
+            batch_loss = loss
+
             # ========================
 
         return BatchResult(batch_loss, num_correct)

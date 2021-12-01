@@ -22,7 +22,6 @@ class Classifier(nn.Module, ABC):
 
         # TODO: Add any additional initializations here, if you need them.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
         # ========================
 
     def forward(self, x: Tensor) -> Tensor:
@@ -34,7 +33,7 @@ class Classifier(nn.Module, ABC):
 
         # TODO: Implement the forward pass, returning raw scores from the wrapped model.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        z = self.model(x)
         # ========================
         assert z.shape[0] == x.shape[0] and z.ndim == 2, "raw scores should be (N, C)"
         return z
@@ -47,7 +46,7 @@ class Classifier(nn.Module, ABC):
         """
         # TODO: Calcualtes class scores for each sample.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        z = self.model(x)
         # ========================
         return self.predict_proba_scores(z)
 
@@ -59,7 +58,8 @@ class Classifier(nn.Module, ABC):
         """
         # TODO: Calculate class probabilities for the input.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        z = torch.softmax(z, dim=-1)
+        return z
         # ========================
 
     def classify(self, x: Tensor) -> Tensor:
@@ -107,7 +107,7 @@ class BinaryClassifier(Classifier):
     """
 
     def __init__(
-        self, model: nn.Module, positive_class: int = 1, threshold: float = 0.5
+            self, model: nn.Module, positive_class: int = 1, threshold: float = 0.5
     ):
         """
         :param model: The wrapped model. Should implement a `forward()` function
@@ -128,17 +128,21 @@ class BinaryClassifier(Classifier):
         #  greater or equal to the threshold.
         #  Output should be a (N,) integer tensor.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y = y_proba
+        y[y >= self.threshold] = self.positive_class
+        y[y < self.threshold] = 0
+        y = (y[:, 1]).to(torch.int)
+        return y
         # ========================
 
 
 def plot_decision_boundary_2d(
-    classifier: Classifier,
-    x: Tensor,
-    y: Tensor,
-    dx: float = 0.1,
-    ax: Optional[plt.Axes] = None,
-    cmap=plt.cm.get_cmap("coolwarm"),
+        classifier: Classifier,
+        x: Tensor,
+        y: Tensor,
+        dx: float = 0.1,
+        ax: Optional[plt.Axes] = None,
+        cmap=plt.cm.get_cmap("coolwarm"),
 ):
     """
     Plots a decision boundary of a classifier based on two input features.
@@ -189,7 +193,7 @@ def plot_decision_boundary_2d(
 
 
 def select_roc_thresh(
-    classifier: Classifier, x: Tensor, y: Tensor, plot: bool = False,
+        classifier: Classifier, x: Tensor, y: Tensor, plot: bool = False,
 ):
     """
     Calculates (and optionally plot) a classification threshold of a binary

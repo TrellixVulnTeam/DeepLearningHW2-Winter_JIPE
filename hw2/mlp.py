@@ -60,13 +60,20 @@ class MLP(nn.Module):
         layer = 0
         for in_dim, out_dim in zip(all_dims[:-1], all_dims[1:]):
             if not (type(nonlins[layer]) is str):
+                linear = nn.Linear(in_dim, out_dim, bias=True)
+                linear.weight.requires_grad = True
+                linear.bias.requires_grad = True
                 layers += [
-                    nn.Linear(in_dim, out_dim, bias=True),
+                    linear,
                     nonlins[layer]
                 ]
+                print(linear)
             else:
+                linear = nn.Linear(in_dim, out_dim, bias=True)
+                linear.weight.requires_grad = True
+                linear.bias.requires_grad = True
                 layers += [
-                    nn.Linear(in_dim, out_dim, bias=True),
+                    linear,
                     ACTIVATIONS[nonlins[layer]]()
                 ]
             layer += 1
@@ -84,7 +91,8 @@ class MLP(nn.Module):
         #  shapes are as expected.
         # ====== YOUR CODE: ======
         assert x.shape[1] == self.in_dim
-        y_l =  torch.stack([self.fc_layers(x_i) for x_i in torch.unbind(x, dim=0)], dim=0)
+
+        y_l = torch.stack([self.fc_layers(x_i) for x_i in torch.unbind(x, dim=0)], dim=0)
         assert y_l.shape[1] == self.out_dim
         return y_l
         # ========================

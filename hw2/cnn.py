@@ -19,17 +19,17 @@ class CNN(nn.Module):
     """
 
     def __init__(
-        self,
-        in_size,
-        out_classes: int,
-        channels: Sequence[int],
-        pool_every: int,
-        hidden_dims: Sequence[int],
-        conv_params: dict = {},
-        activation_type: str = "relu",
-        activation_params: dict = {},
-        pooling_type: str = "max",
-        pooling_params: dict = {},
+            self,
+            in_size,
+            out_classes: int,
+            channels: Sequence[int],
+            pool_every: int,
+            hidden_dims: Sequence[int],
+            conv_params: dict = {},
+            activation_type: str = "relu",
+            activation_params: dict = {},
+            pooling_type: str = "max",
+            pooling_params: dict = {},
     ):
         """
         :param in_size: Size of input images, e.g. (C,H,W).
@@ -63,9 +63,11 @@ class CNN(nn.Module):
 
         if activation_type not in ACTIVATIONS or pooling_type not in POOLINGS:
             raise ValueError("Unsupported activation or pooling type")
-
+        print("hi")
         self.feature_extractor = self._make_feature_extractor()
+        print(self.feature_extractor)
         self.mlp = self._make_mlp()
+        print("hiho")
 
     def _make_feature_extractor(self):
         in_channels, in_h, in_w, = tuple(self.in_size)
@@ -80,8 +82,22 @@ class CNN(nn.Module):
         #  Note: If N is not divisible by P, then N mod P additional
         #  CONV->ACTs should exist at the end, without a POOL after them.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
-
+        mod_np = len(self.channels) % self.pool_every
+        div_np = len(self.channels) // self.pool_every
+        for i in range(div_np):
+            for j in range(self.pool_every):
+                layers += [nn.Conv2d(in_channels=in_channels, out_channels=self.channels[i + j],
+                                     kernel_size=self.conv_params['kernel_size'], stride=self.conv_params['stride'],
+                                     padding=self.conv_params['padding']),
+                           ACTIVATIONS[self.activation_type](**self.activation_params)]
+                in_channels = self.channels[i + j]
+            layers += [POOLINGS[self.pooling_type](**self.pooling_params)]
+        for i in range(mod_np):
+            layers += [nn.Conv2d(in_channels=in_channels, out_channels=self.channels[div_np + i],
+                                 kernel_size=self.conv_params['kernel_size'], stride=self.conv_params['stride'],
+                                 padding=self.conv_params['padding']),
+                       ACTIVATIONS[self.activation_type](**self.activation_params)]
+            in_channels += self.channels[div_np + i]
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -95,7 +111,12 @@ class CNN(nn.Module):
         rng_state = torch.get_rng_state()
         try:
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            input_feature_extractor = torch.randint(0, 1, (1, self.in_size[0], self.in_size[1], self.in_size[2]),
+                                                    dtype=torch.float)
+            print(input_feature_extractor.dtype)
+            input_classifier = self.feature_extractor(input_feature_extractor)
+            print(f'this is the input_classifier: {input_classifier} and this is the shape: {input_classifier.shape}')
+            return input_classifier.shape[1] * input_classifier.shape[2] * input_classifier.shape[3]
             # ========================
         finally:
             torch.set_rng_state(rng_state)
@@ -109,7 +130,10 @@ class CNN(nn.Module):
         #  - The last Linear layer should have an output dim of out_classes.
         mlp: MLP = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        nonlins = [self.activation_type] * (len([*self.hidden_dims, self.out_classes]))
+        print(f'this is nonlins: {nonlins}')
+        print(f'this is dims: {[*self.hidden_dims, self.out_classes]}')
+        mlp = MLP(in_dim=self._n_features(), dims=[*self.hidden_dims, self.out_classes], nonlins=nonlins)
         # ========================
         return mlp
 
@@ -119,7 +143,11 @@ class CNN(nn.Module):
         #  return class scores.
         out: Tensor = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        featureExtractor = self.feature_extractor(x)
+        print(x)
+        featureExtractor = featureExtractor.reshape(x.shape[0], -1)
+        print(featureExtractor.shape)
+        out = self.mlp(featureExtractor.reshape(x.shape[0], -1))
         # ========================
         return out
 
@@ -130,15 +158,15 @@ class ResidualBlock(nn.Module):
     """
 
     def __init__(
-        self,
-        in_channels: int,
-        channels: Sequence[int],
-        kernel_sizes: Sequence[int],
-        batchnorm: bool = False,
-        dropout: float = 0.0,
-        activation_type: str = "relu",
-        activation_params: dict = {},
-        **kwargs,
+            self,
+            in_channels: int,
+            channels: Sequence[int],
+            kernel_sizes: Sequence[int],
+            batchnorm: bool = False,
+            dropout: float = 0.0,
+            activation_type: str = "relu",
+            activation_params: dict = {},
+            **kwargs,
     ):
         """
         :param in_channels: Number of input channels to the first convolution.
@@ -198,11 +226,11 @@ class ResidualBottleneckBlock(ResidualBlock):
     """
 
     def __init__(
-        self,
-        in_out_channels: int,
-        inner_channels: Sequence[int],
-        inner_kernel_sizes: Sequence[int],
-        **kwargs,
+            self,
+            in_out_channels: int,
+            inner_channels: Sequence[int],
+            inner_kernel_sizes: Sequence[int],
+            **kwargs,
     ):
         """
         :param in_out_channels: Number of input and output channels of the block.
@@ -232,16 +260,16 @@ class ResidualBottleneckBlock(ResidualBlock):
 
 class ResNet(CNN):
     def __init__(
-        self,
-        in_size,
-        out_classes,
-        channels,
-        pool_every,
-        hidden_dims,
-        batchnorm=False,
-        dropout=0.0,
-        bottleneck: bool = False,
-        **kwargs,
+            self,
+            in_size,
+            out_classes,
+            channels,
+            pool_every,
+            hidden_dims,
+            batchnorm=False,
+            dropout=0.0,
+            bottleneck: bool = False,
+            **kwargs,
     ):
         """
         See arguments of CNN & ResidualBlock.
@@ -287,7 +315,7 @@ class YourCNN(CNN):
 
         # TODO: Add any additional initialization as needed.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+
         # ========================
 
     # TODO: Change whatever you want about the CNN to try to
@@ -295,6 +323,4 @@ class YourCNN(CNN):
     #  For example, add batchnorm, dropout, skip connections, change conv
     #  filter sizes etc.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
-
     # ========================

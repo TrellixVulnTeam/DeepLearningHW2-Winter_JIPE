@@ -72,10 +72,16 @@ class MLP(nn.Module):
                 linear = nn.Linear(in_dim, out_dim, bias=True)
                 linear.weight.requires_grad = True
                 linear.bias.requires_grad = True
-                layers += [
-                    linear,
-                    ACTIVATIONS[nonlins[layer]]()
-                ]
+                if layer == 'logsoftmax':
+                    layers += [
+                        linear,
+                        ACTIVATIONS[nonlins[layer]](dim=1)
+                    ]
+                else:
+                    layers += [
+                        linear,
+                        ACTIVATIONS[nonlins[layer]]()
+                    ]
             layer += 1
 
         # Sequential is a container for layers
@@ -91,8 +97,8 @@ class MLP(nn.Module):
         #  shapes are as expected.
         # ====== YOUR CODE: ======
         assert x.shape[1] == self.in_dim
-
-        y_l = torch.stack([self.fc_layers(x_i) for x_i in torch.unbind(x, dim=0)], dim=0)
+        x = torch.reshape(x, (x.shape[0], -1))
+        y_l = self.fc_layers(x)
         assert y_l.shape[1] == self.out_dim
         return y_l
         # ========================

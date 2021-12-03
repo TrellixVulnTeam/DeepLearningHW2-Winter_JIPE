@@ -22,6 +22,8 @@ class Classifier(nn.Module, ABC):
 
         # TODO: Add any additional initializations here, if you need them.
         # ====== YOUR CODE: ======
+        # Output non-linearity
+        self.log_softmax = nn.LogSoftmax(dim=1)
         # ========================
 
     def forward(self, x: Tensor) -> Tensor:
@@ -58,7 +60,7 @@ class Classifier(nn.Module, ABC):
         """
         # TODO: Calculate class probabilities for the input.
         # ====== YOUR CODE: ======
-        z = torch.softmax(z, dim=-1)
+        z = torch.softmax(z, dim=1)
         return z
         # ========================
 
@@ -172,7 +174,6 @@ def plot_decision_boundary_2d(
         edgecolor="k",
         cmap=cmap,
     )
-
     # TODO:
     #  Construct the decision boundary.
     #  Use torch.meshgrid() to create the grid (x1_grid, x2_grid) with step dx on which
@@ -181,7 +182,14 @@ def plot_decision_boundary_2d(
     #  plot a contour map.
     x1_grid, x2_grid, y_hat = None, None, None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    x1 = torch.linspace(min(x[:, 0]), max(x[:, 0]), int(x.shape[0] * dx))
+    x2 = torch.linspace(min(x[:, 1]), max(x[:, 1]), int(x.shape[0] * dx))
+    x1_grid, x2_grid = torch.meshgrid(x1, x2)
+    x_flat = torch.flatten(x1_grid.T)
+    y_flat = torch.flatten(x2_grid)
+    X = torch.column_stack((x_flat.T, y_flat.T))
+    y_hat = classifier.classify(X)
+    y_hat = torch.reshape(y_hat, x1_grid.shape)
     # ========================
 
     # Plot the decision boundary as a filled contour
@@ -213,9 +221,12 @@ def select_roc_thresh(
     #  Calculate the index of the optimal threshold as optimal_thresh_idx.
     #  Calculate the optimal threshold as optimal_thresh.
     fpr, tpr, thresh = None, None, None
-    optimal_theresh_idx, optimal_thresh = None, None
+    optimal_thresh_idx, optimal_thresh = None, None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    fpr, tpr, thresh = roc_curve(y, classifier.classify(x))
+    print(fpr, tpr, thresh)
+    optimal_thresh_idx = 1
+    optimal_thresh = tpr[optimal_thresh_idx]
     # ========================
 
     if plot:

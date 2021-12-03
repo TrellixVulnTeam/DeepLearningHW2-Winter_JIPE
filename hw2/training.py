@@ -82,9 +82,9 @@ class Trainer(abc.ABC):
             #  - Save losses and accuracies in the lists above.
             # ====== YOUR CODE: ======
             train_acc.append(self.train_epoch(dl_train).accuracy)
-            train_loss.append(self.train_epoch(dl_train).losses)
+            train_loss.append(sum(self.train_epoch(dl_train).losses)/len(dl_train.batch_sampler))
             test_acc.append(self.test_epoch(dl_test).accuracy)
-            test_loss.append(self.test_epoch(dl_test).losses)
+            test_loss.append(sum(self.train_epoch(dl_train).losses)/len(dl_train.batch_sampler))
             # ========================
 
             # TODO:
@@ -257,15 +257,14 @@ class ClassifierTrainer(Trainer):
         #  - Update parameters
         #  - Classify and calculate number of correct predictions
         # ====== YOUR CODE: ======
-        y_pred = self.model.classify(X)
-        diff = y_pred - y
-        num_correct = y.shape[0] - torch.count_nonzero(diff)
-        loss = self.loss_fn(y_pred, y.to(torch.float32))
-        loss.requires_grad = True
+        y_pred = self.model(X)
+        loss = self.loss_fn(y_pred, y)
+        y_classify_scores = self.model.classify_scores(y_pred)
+        num_correct = y.shape[0] - torch.count_nonzero(y - y_classify_scores)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        batch_loss = loss
+        batch_loss = loss.item()
         # ========================
 
         return BatchResult(batch_loss, num_correct)
@@ -285,11 +284,11 @@ class ClassifierTrainer(Trainer):
             #  - Forward pass
             #  - Calculate number of correct predictions
             # ====== YOUR CODE: ======
-            y_pred = self.model.classify(X)
-            diff = y_pred - y
-            num_correct = y.shape[0] - torch.count_nonzero(diff)
-            loss = self.loss_fn(y_pred, y.to(torch.float32))
-            batch_loss = loss
+            y_pred = self.model(X)
+            loss = self.loss_fn(y_pred, y)
+            y_classify_scores = self.model.classify_scores(y_pred)
+            num_correct = y.shape[0] - torch.count_nonzero(y - y_classify_scores)
+            batch_loss = loss.item()
 
             # ========================
 

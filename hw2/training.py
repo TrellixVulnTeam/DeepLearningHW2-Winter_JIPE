@@ -81,10 +81,12 @@ class Trainer(abc.ABC):
             #  - Use the train/test_epoch methods.
             #  - Save losses and accuracies in the lists above.
             # ====== YOUR CODE: ======
-            train_acc.append(self.train_epoch(dl_train).accuracy)
-            train_loss.append(sum(self.train_epoch(dl_train).losses)/len(dl_train.batch_sampler))
-            test_acc.append(self.test_epoch(dl_test).accuracy)
-            test_loss.append(sum(self.train_epoch(dl_train).losses)/len(dl_train.batch_sampler))
+            res_train = self.train_epoch(dl_train)
+            res_test = self.test_epoch(dl_test)
+            train_acc.append(res_train.accuracy)
+            train_loss.append(sum(res_train.losses) / len(dl_train.batch_sampler))
+            test_acc.append(res_test.accuracy)
+            test_loss.append(sum(res_test.losses) / len(dl_train.batch_sampler))
             # ========================
 
             # TODO:
@@ -194,6 +196,7 @@ class Trainer(abc.ABC):
         pbar_name = forward_fn.__name__
         with pbar_fn(desc=pbar_name, total=num_batches, file=pbar_file) as pbar:
             dl_iter = iter(dl)
+            i = 0
             for batch_idx in range(num_batches):
                 data = next(dl_iter)
                 batch_res = forward_fn(data)
@@ -203,7 +206,8 @@ class Trainer(abc.ABC):
 
                 losses.append(batch_res.loss)
                 num_correct += batch_res.num_correct
-
+                i += 1
+            print(f'the amount of batch comp: {i}')
             avg_loss = sum(losses) / num_batches
             accuracy = 100.0 * num_correct / num_samples
             pbar.set_description(

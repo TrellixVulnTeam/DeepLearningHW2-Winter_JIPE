@@ -182,14 +182,26 @@ def plot_decision_boundary_2d(
     #  plot a contour map.
     x1_grid, x2_grid, y_hat = None, None, None
     # ====== YOUR CODE: ======
-    x1 = torch.linspace(min(x[:, 0]), max(x[:, 0]), int(x.shape[0] * dx))
-    x2 = torch.linspace(min(x[:, 1]), max(x[:, 1]), int(x.shape[0] * dx))
+    #x1 = torch.linspace(min(x[:, 0]), max(x[:, 0]), int(x.shape[0] * dx))
+    #x2 = torch.linspace(min(x[:, 1]), max(x[:, 1]), int(x.shape[0] * dx))
+    #x1_grid, x2_grid = torch.meshgrid(x1, x2)
+    #x_flat = torch.flatten(x1_grid.T)
+    #y_flat = torch.flatten(x2_grid)
+    #X = torch.column_stack((x_flat.T, y_flat.T))
+    #y_hat = classifier.classify(X)
+    #y_hat = torch.reshape(y_hat, x1_grid.shape)
+
+
+    x1 = torch.arange(x[:,0].min(),x[:,0].max()+dx,dx)
+    x2 = torch.arange(x[:,1].min(),x[:,1].max()+dx,dx)
     x1_grid, x2_grid = torch.meshgrid(x1, x2)
-    x_flat = torch.flatten(x1_grid.T)
-    y_flat = torch.flatten(x2_grid)
-    X = torch.column_stack((x_flat.T, y_flat.T))
+    x1_flat=torch.unsqueeze(x1_grid.flatten(),1)
+    x2_flat=torch.unsqueeze(x2_grid.flatten(),1)
+    X=torch.hstack([x1_flat,x2_flat])
     y_hat = classifier.classify(X)
-    y_hat = torch.reshape(y_hat, x1_grid.shape)
+    y_hat = y_hat.reshape(x1_grid.shape)
+    ax.contourf(x1_grid.numpy(),x2_grid.numpy(),y_hat.numpy(),cmap=cmap,alpha=0.3) #im not sure
+
     # ========================
 
     # Plot the decision boundary as a filled contour

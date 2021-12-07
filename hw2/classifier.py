@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from torch import Tensor, nn
 from typing import Optional
 from sklearn.metrics import roc_curve
+import numpy as np
 
 
 class Classifier(nn.Module, ABC):
@@ -182,25 +183,14 @@ def plot_decision_boundary_2d(
     #  plot a contour map.
     x1_grid, x2_grid, y_hat = None, None, None
     # ====== YOUR CODE: ======
-    #x1 = torch.linspace(min(x[:, 0]), max(x[:, 0]), int(x.shape[0] * dx))
-    #x2 = torch.linspace(min(x[:, 1]), max(x[:, 1]), int(x.shape[0] * dx))
-    #x1_grid, x2_grid = torch.meshgrid(x1, x2)
-    #x_flat = torch.flatten(x1_grid.T)
-    #y_flat = torch.flatten(x2_grid)
-    #X = torch.column_stack((x_flat.T, y_flat.T))
-    #y_hat = classifier.classify(X)
-    #y_hat = torch.reshape(y_hat, x1_grid.shape)
-
-
-    x1 = torch.arange(x[:,0].min(),x[:,0].max()+dx,dx)
-    x2 = torch.arange(x[:,1].min(),x[:,1].max()+dx,dx)
+    x1 = torch.arange(x[:, 0].min(), x[:, 0].max() + dx, dx)
+    x2 = torch.arange(x[:, 1].min(), x[:, 1].max() + dx, dx)
     x1_grid, x2_grid = torch.meshgrid(x1, x2)
-    x1_flat=torch.unsqueeze(x1_grid.flatten(),1)
-    x2_flat=torch.unsqueeze(x2_grid.flatten(),1)
-    X=torch.hstack([x1_flat,x2_flat])
+    x1_flat = torch.unsqueeze(x1_grid.flatten(), 1)
+    x2_flat = torch.unsqueeze(x2_grid.flatten(), 1)
+    X = torch.hstack([x1_flat, x2_flat])
     y_hat = classifier.classify(X)
     y_hat = y_hat.reshape(x1_grid.shape)
-    ax.contourf(x1_grid.numpy(),x2_grid.numpy(),y_hat.numpy(),cmap=cmap,alpha=0.3) #im not sure
 
     # ========================
 
@@ -235,10 +225,26 @@ def select_roc_thresh(
     fpr, tpr, thresh = None, None, None
     optimal_thresh_idx, optimal_thresh = None, None
     # ====== YOUR CODE: ======
-    fpr, tpr, thresh = roc_curve(y, classifier.classify(x))
+    fpr, tpr, thresh = roc_curve(y, classifier.classify(x), pos_label=1)
     print(fpr, tpr, thresh)
-    optimal_thresh_idx = 1
+    optimal_thresh_idx = np.argmax(tpr - fpr)
+    optimal_thresh = thresh[optimal_thresh_idx]
+    '''
+    optimal_point = (0, 1)
+    cur_optimal_index = None
+    min_loss = None
+    for i in range(len(thresh)):
+        point = (fpr[i], tpr[i])
+        print(point)
+        dist = ((optimal_point[0] - point[0]) ** 2 + (optimal_point[1] - point[1]) ** 2) ** 0.5
+        if min_loss is None or dist < min_loss:
+            min_loss = dist
+            cur_optimal_index = i
+        print(dist)
+    print(min_loss)
+    optimal_thresh_idx = cur_optimal_index
     optimal_thresh = tpr[optimal_thresh_idx]
+    '''
     # ========================
 
     if plot:

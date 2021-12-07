@@ -16,9 +16,9 @@ def part1_arch_hp():
     out_activation = "none"  # activation function to apply at the output layer
     # TODO: Tweak the MLP architecture hyperparameters.
     # ====== YOUR CODE: ======
-    n_layers = 5
+    n_layers = 4
     hidden_dims = 64
-    activation = 'relu'
+    activation = 'tanh'
     out_activation = 'logsoftmax'
     # ========================
     return dict(

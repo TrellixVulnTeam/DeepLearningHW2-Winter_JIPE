@@ -63,11 +63,8 @@ class CNN(nn.Module):
 
         if activation_type not in ACTIVATIONS or pooling_type not in POOLINGS:
             raise ValueError("Unsupported activation or pooling type")
-        print("hi")
         self.feature_extractor = self._make_feature_extractor()
-        print(self.feature_extractor)
         self.mlp = self._make_mlp()
-        print("hiho")
 
     def _make_feature_extractor(self):
         in_channels, in_h, in_w, = tuple(self.in_size)
@@ -93,11 +90,11 @@ class CNN(nn.Module):
                 in_channels = self.channels[i + j]
             layers += [POOLINGS[self.pooling_type](**self.pooling_params)]
         for i in range(mod_np):
-            layers += [nn.Conv2d(in_channels=in_channels, out_channels=self.channels[div_np + i],
+            layers += [nn.Conv2d(in_channels=in_channels, out_channels=self.channels[div_np*self.pool_every + i],
                                  kernel_size=self.conv_params['kernel_size'], stride=self.conv_params['stride'],
                                  padding=self.conv_params['padding']),
                        ACTIVATIONS[self.activation_type](**self.activation_params)]
-            in_channels += self.channels[div_np + i]
+            in_channels = self.channels[div_np*self.pool_every + i]
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -113,9 +110,7 @@ class CNN(nn.Module):
             # ====== YOUR CODE: ======
             input_feature_extractor = torch.randint(0, 1, (1, self.in_size[0], self.in_size[1], self.in_size[2]),
                                                     dtype=torch.float)
-            print(input_feature_extractor.dtype)
             input_classifier = self.feature_extractor(input_feature_extractor)
-            print(f'this is the input_classifier: {input_classifier} and this is the shape: {input_classifier.shape}')
             return input_classifier.shape[1] * input_classifier.shape[2] * input_classifier.shape[3]
             # ========================
         finally:
@@ -130,9 +125,8 @@ class CNN(nn.Module):
         #  - The last Linear layer should have an output dim of out_classes.
         mlp: MLP = None
         # ====== YOUR CODE: ======
-        nonlins = [self.activation_type] * (len([*self.hidden_dims, self.out_classes]))
-        print(f'this is nonlins: {nonlins}')
-        print(f'this is dims: {[*self.hidden_dims, self.out_classes]}')
+        activation_func = ACTIVATIONS[self.activation_type](**self.activation_params)
+        nonlins = [activation_func] * (len([*self.hidden_dims])) + ['none']
         mlp = MLP(in_dim=self._n_features(), dims=[*self.hidden_dims, self.out_classes], nonlins=nonlins)
         # ========================
         return mlp
@@ -144,9 +138,7 @@ class CNN(nn.Module):
         out: Tensor = None
         # ====== YOUR CODE: ======
         featureExtractor = self.feature_extractor(x)
-        print(x)
         featureExtractor = featureExtractor.reshape(x.shape[0], -1)
-        print(featureExtractor.shape)
         out = self.mlp(featureExtractor.reshape(x.shape[0], -1))
         # ========================
         return out
@@ -323,4 +315,5 @@ class YourCNN(CNN):
     #  For example, add batchnorm, dropout, skip connections, change conv
     #  filter sizes etc.
     # ====== YOUR CODE: ======
+
     # ========================

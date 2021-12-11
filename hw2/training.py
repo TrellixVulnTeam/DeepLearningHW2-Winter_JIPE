@@ -95,14 +95,21 @@ class Trainer(abc.ABC):
             #  - Optional: Implement checkpoints. You can use the save_checkpoint
             #    method on this class to save the model to the file specified by
             #    the checkpoints argument.
-            '''
-            if best_acc is None or test_result.accuracy > best_acc:
+
+            if best_acc is None or res_test.accuracy > best_acc:
                 # ====== YOUR CODE: ======
+                best_acc = res_test.accuracy
+                epochs_without_improvement = 0
+                if checkpoints is not None:
+                    torch.save(self.model, checkpoints)
                 # ========================
             else:
                 # ====== YOUR CODE: ======
+                epochs_without_improvement += 1
                 # ========================
-            '''
+            if early_stopping:
+                if early_stopping <= epochs_without_improvement:
+                    break
         return FitResult(actual_num_epochs, train_loss, train_acc, test_loss, test_acc)
 
     def save_checkpoint(self, checkpoint_filename: str):
@@ -200,14 +207,13 @@ class Trainer(abc.ABC):
             for batch_idx in range(num_batches):
                 data = next(dl_iter)
                 batch_res = forward_fn(data)
-
+                #print(f'{batch_res=}')
                 pbar.set_description(f"{pbar_name} ({batch_res.loss:.3f})")
                 pbar.update()
 
                 losses.append(batch_res.loss)
                 num_correct += batch_res.num_correct
                 i += 1
-            print(f'the amount of batch comp: {i}')
             avg_loss = sum(losses) / num_batches
             accuracy = 100.0 * num_correct / num_samples
             pbar.set_description(

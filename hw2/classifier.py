@@ -225,9 +225,20 @@ def select_roc_thresh(
     fpr, tpr, thresh = None, None, None
     optimal_thresh_idx, optimal_thresh = None, None
     # ====== YOUR CODE: ======
+    '''
     fpr, tpr, thresh = roc_curve(y, classifier.classify(x), pos_label=1)
     print(fpr, tpr, thresh)
     optimal_thresh_idx = np.argmax(tpr - fpr)
+    optimal_thresh = thresh[optimal_thresh_idx]
+    '''
+    fpr, tpr, thresh = roc_curve(y, classifier.predict_proba(x)[:,1].detach())
+    optimal_thresh_idx=0
+    min_distance=None
+    for i in range(len(fpr)):
+        distance=((fpr[i]-0)**2+(tpr[i]-1)**2)**0.5
+        if min_distance is None or min_distance>distance:
+            min_distance=distance
+            optimal_thresh_idx=i
     optimal_thresh = thresh[optimal_thresh_idx]
     '''
     optimal_point = (0, 1)

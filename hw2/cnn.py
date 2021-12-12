@@ -90,11 +90,11 @@ class CNN(nn.Module):
                 in_channels = self.channels[i + j]
             layers += [POOLINGS[self.pooling_type](**self.pooling_params)]
         for i in range(mod_np):
-            layers += [nn.Conv2d(in_channels=in_channels, out_channels=self.channels[div_np*self.pool_every + i],
+            layers += [nn.Conv2d(in_channels=in_channels, out_channels=self.channels[div_np * self.pool_every + i],
                                  kernel_size=self.conv_params['kernel_size'], stride=self.conv_params['stride'],
                                  padding=self.conv_params['padding']),
                        ACTIVATIONS[self.activation_type](**self.activation_params)]
-            in_channels = self.channels[div_np*self.pool_every + i]
+            in_channels = self.channels[div_np * self.pool_every + i]
         # ========================
         seq = nn.Sequential(*layers)
         return seq
@@ -199,16 +199,45 @@ class ResidualBlock(nn.Module):
         #  - Don't create layers which you don't use! This will prevent
         #    correct comparison in the test.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        main_layers = []
+        cur_input_channel = in_channels
+        for channel, kernel_size in zip(channels[0:-1], kernel_sizes[0:-1]):
+            print(kernel_size)
+            main_layers += [nn.Conv2d(in_channels=cur_input_channel,
+                                      out_channels=channel,
+                                      kernel_size=(kernel_sizes),
+                                      padding=int((kernel_size - 1) / 2),
+                                      bias=True)]
+            if dropout > 0:
+                main_layers += [nn.Dropout2d(p=dropout)]
+            if batchnorm:
+                main_layers += [nn.BatchNorm2d(num_features=channel)]
+            main_layers += [ACTIVATIONS[activation_type](**activation_params)]
+            cur_input_channel = channel
+        main_layers += [nn.Conv2d(in_channels=cur_input_channel,
+                                  out_channels=channels[-1],
+                                  kernel_size=(kernel_sizes[-1],),
+                                  padding=int((kernel_sizes[-1] - 1) / 2),
+                                  bias=True)]
+        self.main_path = nn.Sequential(*main_layers)
+        if in_channels != channels[-1]:
+            self.shortcut_path = nn.Conv2d(in_channels=in_channels,
+                                           out_channels=channels[-1],
+                                           kernel_size=(1,),
+                                           bias=False)
+        else:
+            self.shortcut_path = nn.Identity()
         # ========================
 
     def forward(self, x: Tensor):
         # TODO: Implement the forward pass. Save the main and residual path to `out`.
         out: Tensor = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        out = self.main_path(x)
+        out += self.shortcut_path(x)
         # ========================
         out = torch.relu(out)
+        print(f'{out=}')
         return out
 
 

@@ -5,6 +5,7 @@ Note: Inside the answer strings you can use Markdown format and also LaTeX
 math (delimited with $$).
 """
 
+
 # ==============
 # Part 1 answers
 
@@ -52,7 +53,17 @@ def part1_optim_hp():
 part1_q1 = r"""
 **Your answer:**
 
-1. We think that our model's optimization error is relatively milled. we can see in the train graph that the 
+1.  Optimization error - an optimization problem is the problem of finding the best solution from all feasible solutions. 
+We think that our model's optimization error is relatively milled. We can see in the train graph that the acc is 
+reaching ~92% accuracy - which in our opinion is fairly good result.
+
+2.  Generalization error - generalization error is a measure of how accurately an algorithm is able to predict outcome values for previously unseen data.
+we can see that in the test accuracy graph the final result was relatively high, 
+but most of the iterations prior to the final one were quite scattered between 85-75% - which indicates to a high generalization error. 
+
+3. Approximation error - we think that the approximation error of our model is fairly good. 
+we can see it in the decision boundary plot that the shape of the decision boundary is aprox. like we would draw out by hand.
+ meaning that it resembles the h* function.
 """
 
 part1_q2 = r"""
@@ -93,6 +104,8 @@ a = 2
 An equation: $e^{i\pi} -1 = 0$
 
 """
+
+
 # ==============
 # Part 2 answers
 

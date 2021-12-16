@@ -69,27 +69,21 @@ we can see it in the decision boundary plot that the shape of the decision bound
 part1_q2 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+we expect that the fnr will be higher then the fpr. 
+we can see in the first plot of the validation data, that there are more places where it makes sense for us to think
+that something orange is blue than the opposite. and that is why we expect that the FNR will be higher than the FPR
 """
 
 part1_q3 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1. in this scenario we would choose the "optimal" point on the ROC cover to be as close to fpr = 0 and fnr = 1.
+ because we know that the symptoms are non-lethal and a low-cost treatment is available, 
+ we wouldn't wont that our model will give positive response, and by that make our patient take an expensive and dangerous test.
+ 
+2. in this case we would choose the "optimal" point on the ROC cover to be as close to fpr = 0 and fnr = 0.
+we know that the symptoms can be undetected until its to late and the patient can die if we wouldn't detect the disease early enough,
+ so we prefer to pay for the expensive test and risk his life for the detection of the disease.
 """
 
 part1_q4 = r"""

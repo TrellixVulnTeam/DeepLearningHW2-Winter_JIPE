@@ -127,14 +127,20 @@ def part2_optim_hp():
 part2_q1 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1. for the left architecture the number of parameters will be (3*3*256+1)*256 + (3*3*256+1)*256 = 1180160. where the 
+    3*3 is the size of the kernel, times the input dim + the baies, the result is multipled by the out dim in this case 
+    256. we have two conv layers. in the right architecture the number of parameters are (1*1*256+1)*64 +(3*3*64+1)*64 +( 
+    1*1*64+1)*256 = 70016. in this architecture we have 3 conv layers. in addition we can see that the num of parmetes in 
+    the right (bottleneck) is much lower then the regular setting.
+2. due to the smaller dim of the bottleneck we can 
+    assume that the conv operation on the bottleneck will result in fewer FLOPS calculations - as also the dim of the 
+    kernel is smaller and the overall dim of the matrix is also smaller in comparison to a residual  architecture
+3. (1) spatially: in this metric we think that the regular res block that has 2 conv layers will have better spatial 
+    ability then the bottleneck one - since in the bottleneck architecture we have only one 3*3 conv 
+    (1*1 conv isnt really helping in spatial ability).
+    
+    (2) across feature maps: in this metric we think that bottleneck architectures have clear strength compere to 
+    regular res architectures - since we are transferring data identical through the layers. 
 """
 
 # ==============

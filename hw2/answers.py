@@ -52,14 +52,7 @@ def part1_optim_hp():
 part1_q1 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1. We think that our model's optimization error is relatively milled. we can see in the train graph that the 
 """
 
 part1_q2 = r"""

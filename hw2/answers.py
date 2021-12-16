@@ -88,7 +88,6 @@ An equation: $e^{i\pi} -1 = 0$
 
 """
 
-
 part1_q4 = r"""
 **Your answer:**
 

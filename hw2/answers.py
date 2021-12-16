@@ -88,14 +88,28 @@ we know that the symptoms can be undetected until its to late and the patient ca
 
 part1_q4 = r"""
 **Your answer:**
+1. According to the experiments we can see that we get the best result (the decision boundaries and model performance fits better the data) as
+the width increases.
+There were cases depending on the depth that for example: for a model with a low depth it could be seen that for a larger width we get better results.
+For models with a higher depth it could be seen that it did not work that way, as the width increased the results were better up to a certain point.
+After that it could be seen that increasing the width was hurts the results.
+
+2.According to the experiments it seems that as the depth increased we get better results (the decision boundaries and model performance fits better the data)
+There were cases depending on the width that as we increased the depth the results improved (when the width was smaller), 
+and cases where increasing the depth resulted to better results until a certain point and after that made the results a little less good (happened when the width was larger)
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+3. The first pair of configurations: we can see that the model with depth=4 and width=8 gets better results. (gets a less linear decision boundary)
+the second model with depth=1 width=32 gets less good results (gets a more linear decision boundary and that is why can fit the data less well)
+
+The second pair of configurations: the models look almost the same, the model with depth=1 and width=128 has a little bit better results.
+It seems that if the model is wide enough it is equivalent to the deep model even though non linearity is applied only once.
+
+
+4. Threshold selection on the validation set improves the results on the test set because it might reduce the generalization error 
+because we select it on some data and this data is the validation set that is almost similar to the train set
+for example in noise and how they made.
+
 
 """
 

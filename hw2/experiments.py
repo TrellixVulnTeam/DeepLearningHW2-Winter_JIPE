@@ -137,11 +137,6 @@ def cnn_experiment(
     for layersPerBlock in range(layers_per_block):
         for filterPerLayer in filters_per_layer:
             channels.append(filterPerLayer)
-    print(f'{channels=}')
-    print(f'{[channel for channel in filters_per_layer for _ in range(layers_per_block)]}')
-    print(f'{ds_train[0][0].shape}')
-    x0, _ = ds_train[0]
-    print(f'{x0.shape}')
     model = ArgMaxClassifier(
         model=model_cls(ds_train[0][0].shape, 10, channels=channels,
                         pool_every=pool_every, hidden_dims=hidden_dims,

@@ -131,7 +131,6 @@ def cnn_experiment(
     #   for you automatically.
     fit_res = None
     # ====== YOUR CODE: ======
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     dl_train = torch.utils.data.DataLoader(ds_train, batches, shuffle=False)
     dl_test = torch.utils.data.DataLoader(ds_test, batches, shuffle=False)
     channels = []

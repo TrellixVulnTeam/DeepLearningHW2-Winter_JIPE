@@ -84,8 +84,10 @@ class Trainer(abc.ABC):
             res_train = self.train_epoch(dl_train)
             res_test = self.test_epoch(dl_test)
             train_acc.append(res_train.accuracy)
+            print(res_train.accuracy)
             train_loss.append(sum(res_train.losses) / len(dl_train.batch_sampler))
             test_acc.append(res_test.accuracy)
+            print(res_test.accuracy)
             test_loss.append(sum(res_test.losses) / len(dl_train.batch_sampler))
             # ========================
 
@@ -277,7 +279,7 @@ class ClassifierTrainer(Trainer):
         batch_loss = loss.item()
         # ========================
 
-        return BatchResult(batch_loss, num_correct)
+        return BatchResult(batch_loss, num_correct.float())
 
     def test_batch(self, batch) -> BatchResult:
         X, y = batch
@@ -302,4 +304,4 @@ class ClassifierTrainer(Trainer):
 
             # ========================
 
-        return BatchResult(batch_loss, num_correct)
+        return BatchResult(batch_loss, num_correct.float())

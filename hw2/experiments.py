@@ -143,7 +143,7 @@ def cnn_experiment(
                         conv_params=dict(kernel_size=3, stride=1, padding=1),
                         activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     )
-    momentum = 1.4
+    momentum = 1
     oprim_dict = dict(lr=lr, weight_decay=reg, momentum=momentum)
 
     optimizer = torch.optim.SGD(params=model.parameters(), **oprim_dict)
@@ -159,7 +159,6 @@ def cnn_experiment(
 
 def save_experiment(run_name, out_dir, cfg, fit_res):
     output = dict(config=cfg, results=fit_res._asdict())
-    print(f'{output=}')
     cfg_LK = (
         f'L{cfg["layers_per_block"]}_K'
         f'{"-".join(map(str, cfg["filters_per_layer"]))}'

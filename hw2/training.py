@@ -209,7 +209,7 @@ class Trainer(abc.ABC):
             for batch_idx in range(num_batches):
                 data = next(dl_iter)
                 batch_res = forward_fn(data)
-                #print(f'{batch_res=}')
+                # print(f'{batch_res=}')
                 pbar.set_description(f"{pbar_name} ({batch_res.loss:.3f})")
                 pbar.update()
 
@@ -272,14 +272,15 @@ class ClassifierTrainer(Trainer):
         y_pred = self.model(X)
         loss = self.loss_fn(y_pred, y)
         y_classify_scores = self.model.classify_scores(y_pred)
-        num_correct = y.shape[0] - torch.count_nonzero(y - y_classify_scores)
+        num_correct_tensor = y.shape[0] - torch.count_nonzero(y - y_classify_scores)
+        num_correct = num_correct_tensor.item()
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
         batch_loss = loss.item()
         # ========================
 
-        return BatchResult(batch_loss, num_correct.float())
+        return BatchResult(batch_loss, num_correct)
 
     def test_batch(self, batch) -> BatchResult:
         X, y = batch
@@ -299,9 +300,10 @@ class ClassifierTrainer(Trainer):
             y_pred = self.model(X)
             loss = self.loss_fn(y_pred, y)
             y_classify_scores = self.model.classify_scores(y_pred)
-            num_correct = y.shape[0] - torch.count_nonzero(y - y_classify_scores)
+            num_correct_tensor = y.shape[0] - torch.count_nonzero(y - y_classify_scores)
+            num_correct = num_correct_tensor.item()
             batch_loss = loss.item()
 
             # ========================
 
-        return BatchResult(batch_loss, num_correct.float())
+        return BatchResult(batch_loss, num_correct)

@@ -152,8 +152,6 @@ def cnn_experiment(
     trainer = ClassifierTrainer(model, loss_fn, optimizer, device=device)
     fit_res = trainer.fit(dl_train=dl_train, dl_test=dl_test, num_epochs=epochs, checkpoints=checkpoints,
                           early_stopping=early_stopping, **kw)
-    fit_res.test_acc = [test_acc_epoch for test_acc_epoch in fit_res.test_acc]
-    fit_res.train_acc = [train_acc_epoch for train_acc_epoch in fit_res.train_acc]
     '''
     dl_train = torch.utils.data.DataLoader(ds_train, batch_size=batches,
                                            shuffle=False)

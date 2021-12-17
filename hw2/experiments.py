@@ -143,7 +143,7 @@ def cnn_experiment(
                         conv_params=dict(kernel_size=3, stride=1, padding=1),
                         activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     )
-    momentum = 1
+    momentum = 0.8
     oprim_dict = dict(lr=lr, weight_decay=reg, momentum=momentum)
 
     optimizer = torch.optim.SGD(params=model.parameters(), **oprim_dict)

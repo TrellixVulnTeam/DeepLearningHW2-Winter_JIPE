@@ -143,7 +143,7 @@ def cnn_experiment(
                         conv_params=dict(kernel_size=3, stride=1, padding=1),
                         activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     )
-    momentum = 0.9
+    momentum = 1.4
     oprim_dict = dict(lr=lr, weight_decay=reg, momentum=momentum)
 
     optimizer = torch.optim.SGD(params=model.parameters(), **oprim_dict)
@@ -152,29 +152,6 @@ def cnn_experiment(
     trainer = ClassifierTrainer(model, loss_fn, optimizer, device=device)
     fit_res = trainer.fit(dl_train=dl_train, dl_test=dl_test, num_epochs=epochs, checkpoints=checkpoints,
                           early_stopping=early_stopping, **kw)
-    '''
-    dl_train = torch.utils.data.DataLoader(ds_train, batch_size=batches,
-                                           shuffle=False)
-    dl_test = torch.utils.data.DataLoader(ds_test, batch_size=batches,
-                                          shuffle=False)
-    channels = [channel for channel in filters_per_layer for _ in range(layers_per_block)]
-    conv_params = dict(kernel_size=3, stride=1, padding=1)
-    pooling_params = dict(kernel_size=2)
-    x0, _ = ds_train[0]
-    model = ArgMaxClassifier(
-        model=model_cls(x0.shape, 10, channels=channels,
-                        pool_every=pool_every, hidden_dims=hidden_dims,
-                        conv_params=conv_params, activation_type='lrelu', activation_params=dict(negative_slope=0.01),
-                        pooling_type='avg', pooling_params=pooling_params))
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=lr, weight_decay=reg)
-    loss_fn = torch.nn.CrossEntropyLoss()
-
-    trainer = ClassifierTrainer(model, loss_fn, optimizer, device=device)
-    fit_res = trainer.fit(dl_train=dl_train, dl_test=dl_test, num_epochs=epochs, checkpoints=checkpoints,
-                          early_stopping=early_stopping, **kw)
-    fit_res.test_acc = [test_acc_epoch.item() for test_acc_epoch in fit_res.test_acc]
-    fit_res.train_acc = [train_acc_epoch.item() for train_acc_epoch in fit_res.train_acc]
-    '''
     # ========================
 
     save_experiment(run_name, out_dir, cfg, fit_res)

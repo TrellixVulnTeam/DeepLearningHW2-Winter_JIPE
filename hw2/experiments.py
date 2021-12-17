@@ -142,7 +142,7 @@ def cnn_experiment(
         model=model_cls(ds_train[0][0].shape, 10, channels=channels,
                         pool_every=pool_every, hidden_dims=hidden_dims,
                         conv_params=dict(kernel_size=3, stride=1, padding=1),
-                        activation_type='relu', pooling_type='max', pooling_params=dict(kernel_size=2))
+                        activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     )
     lr = 5e-2
     weight_decay = 0.01
@@ -163,7 +163,7 @@ def cnn_experiment(
 
 def save_experiment(run_name, out_dir, cfg, fit_res):
     output = dict(config=cfg, results=fit_res._asdict())
-
+    print(f'{output=}')
     cfg_LK = (
         f'L{cfg["layers_per_block"]}_K'
         f'{"-".join(map(str, cfg["filters_per_layer"]))}'

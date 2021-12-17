@@ -131,17 +131,20 @@ def cnn_experiment(
     #   for you automatically.
     fit_res = None
     # ====== YOUR CODE: ======
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     dl_train = torch.utils.data.DataLoader(ds_train, batches, shuffle=False)
     dl_test = torch.utils.data.DataLoader(ds_test, batches, shuffle=False)
     channels = []
     for layersPerBlock in range(layers_per_block):
         for filterPerLayer in filters_per_layer:
             channels.append(filterPerLayer)
+    model_temp = model_cls(ds_train[0][0].shape, 10, channels=channels,
+                           pool_every=pool_every, hidden_dims=hidden_dims,
+                           conv_params=dict(kernel_size=2, stride=1, padding=1),
+                           activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
+    model_temp = model_temp.to(device)
     model = ArgMaxClassifier(
-        model=model_cls(ds_train[0][0].shape, 10, channels=channels,
-                        pool_every=pool_every, hidden_dims=hidden_dims,
-                        conv_params=dict(kernel_size=2, stride=1, padding=1),
-                        activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
+        model=model_temp
     )
     momentum = 0.9
     oprim_dict = dict(lr=lr, weight_decay=reg, momentum=momentum)

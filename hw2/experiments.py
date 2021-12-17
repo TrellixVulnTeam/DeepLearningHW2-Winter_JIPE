@@ -134,14 +134,13 @@ def cnn_experiment(
     dl_train = torch.utils.data.DataLoader(ds_train, batches, shuffle=False)
     dl_test = torch.utils.data.DataLoader(ds_test, batches, shuffle=False)
     channels = []
-    # for layersPerBlock in range(layers_per_block):
-    #     for filterPerLayer in filters_per_layer:
-    #         channels.append(filterPerLayer)
-    channels = [channel for channel in filters_per_layer for _ in range(layers_per_block)]
+    for layersPerBlock in range(layers_per_block):
+        for filterPerLayer in filters_per_layer:
+            channels.append(filterPerLayer)
     model = ArgMaxClassifier(
         model=model_cls(ds_train[0][0].shape, 10, channels=channels,
                         pool_every=pool_every, hidden_dims=hidden_dims,
-                        conv_params=dict(kernel_size=3, stride=1, padding=1),
+                        conv_params=dict(kernel_size=2, stride=1, padding=1),
                         activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     )
     print(model)

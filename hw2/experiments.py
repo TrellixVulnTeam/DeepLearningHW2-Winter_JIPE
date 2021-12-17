@@ -87,7 +87,7 @@ def cnn_experiment(
         early_stopping=3,
         checkpoints=None,
         lr=5e-3,
-        reg=1e-3,
+        reg=5e-3,
         # Model params
         filters_per_layer=[64],
         layers_per_block=2,

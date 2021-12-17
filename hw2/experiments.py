@@ -86,8 +86,8 @@ def cnn_experiment(
         epochs=100,
         early_stopping=3,
         checkpoints=None,
-        lr=1e-3,
-        reg=1e-2,
+        lr=5e-3,
+        reg=1e-3,
         # Model params
         filters_per_layer=[64],
         layers_per_block=2,
@@ -143,6 +143,7 @@ def cnn_experiment(
                         conv_params=dict(kernel_size=3, stride=1, padding=1),
                         activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     )
+    print(model)
     momentum = 0.9
     oprim_dict = dict(lr=lr, weight_decay=reg, momentum=momentum)
 

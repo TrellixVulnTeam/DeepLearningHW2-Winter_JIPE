@@ -27,12 +27,12 @@ MODEL_TYPES = {
 
 
 def mlp_experiment(
-    depth: int,
-    width: int,
-    dl_train: DataLoader,
-    dl_valid: DataLoader,
-    dl_test: DataLoader,
-    n_epochs: int,
+        depth: int,
+        width: int,
+        dl_train: DataLoader,
+        dl_valid: DataLoader,
+        dl_test: DataLoader,
+        n_epochs: int,
 ):
     # TODO:
     #  - Create a BinaryClassifier model.
@@ -46,27 +46,24 @@ def mlp_experiment(
     #  Note: use print_every=0, verbose=False, plot=False where relevant to prevent
     #  output from this function.
     # ====== YOUR CODE: ======
-    #model= BinaryClassifier(
+    # model= BinaryClassifier(
     #    model=MLP(in_dim=2,dims=[*[width, ]*depth,2],nonlins=[*['tanh',]*depth,"logsoftmax"]),threshold=0.5,
-    #)
-    #loss_fn = torch.nn.CrossEntropyLoss()
-
-
-
+    # )
+    # loss_fn = torch.nn.CrossEntropyLoss()
 
     model = BinaryClassifier(
         model=MLP(
             in_dim=2,
-            dims=[*[width,]*depth, 2],
-            nonlins=[*['tanh',]*depth, 'lrelu']
+            dims=[*[width, ] * depth, 2],
+            nonlins=[*['tanh', ] * depth, 'lrelu']
         ),
         threshold=0.5,
     )
     loss_fn = torch.nn.CrossEntropyLoss()
-    kw = dict(print_every=0, verbose=False,plot=False)
+    kw = dict(print_every=0, verbose=False, plot=False)
     optimizer = torch.optim.Adam(params=model.parameters())
     trainer = ClassifierTrainer(model, loss_fn, optimizer)
-    fit_result = trainer.fit(dl_train, dl_valid, n_epochs,**kw)
+    fit_result = trainer.fit(dl_train, dl_valid, n_epochs, **kw)
     valid_acc = fit_result.test_acc[-1]
     thresh = select_roc_thresh(model, *dl_valid.dataset.tensors, plot=False)
     model.threshold = thresh
@@ -78,27 +75,27 @@ def mlp_experiment(
 
 
 def cnn_experiment(
-    run_name,
-    out_dir="./results",
-    seed=None,
-    device=None,
-    # Training params
-    bs_train=128,
-    bs_test=None,
-    batches=100,
-    epochs=100,
-    early_stopping=3,
-    checkpoints=None,
-    lr=1e-3,
-    reg=1e-3,
-    # Model params
-    filters_per_layer=[64],
-    layers_per_block=2,
-    pool_every=2,
-    hidden_dims=[1024],
-    model_type="cnn",
-    # You can add extra configuration for your experiments here
-    **kw,
+        run_name,
+        out_dir="./results",
+        seed=None,
+        device=None,
+        # Training params
+        bs_train=128,
+        bs_test=None,
+        batches=100,
+        epochs=100,
+        early_stopping=3,
+        checkpoints=None,
+        lr=1e-3,
+        reg=1e-3,
+        # Model params
+        filters_per_layer=[64],
+        layers_per_block=2,
+        pool_every=2,
+        hidden_dims=[1024],
+        model_type="cnn",
+        # You can add extra configuration for your experiments here
+        **kw,
 ):
     """
     Executes a single run of a Part3 experiment with a single configuration.
@@ -134,7 +131,31 @@ def cnn_experiment(
     #   for you automatically.
     fit_res = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    dl_train = torch.utils.data.DataLoader(ds_train, batches, shuffle=False)
+    dl_test = torch.utils.data.DataLoader(ds_test, batches, shuffle=False)
+    channels = []
+    for layersPerBlock in range(layers_per_block):
+        for filterPerLayer in filters_per_layer:
+            channels.append(filterPerLayer)
+
+    model = ArgMaxClassifier(
+        model=model_cls(ds_train[0][0].shape, 10, channels=channels,
+                        pool_every=pool_every, hidden_dims=hidden_dims,
+                        conv_params=dict(kernel_size=3, stride=1, padding=1),
+                        activation_type='relu', pooling_type='max', pooling_params=dict(kernel_size=2))
+    )
+    lr = 5e-2
+    weight_decay = 0.01
+    momentum = 0.9
+    oprim_dict = dict(lr=lr, weight_decay=reg, momentum=momentum)
+
+    optimizer = torch.optim.SGD(params=model.parameters(), **oprim_dict)
+    loss_fn = torch.nn.CrossEntropyLoss()
+
+    trainer = ClassifierTrainer(model, loss_fn, optimizer, device=device)
+    fit_res = trainer.fit(dl_train=dl_train, dl_test=dl_test, num_epochs=epochs, checkpoints=checkpoints,
+                          early_stopping=early_stopping, **kw)
+
     # ========================
 
     save_experiment(run_name, out_dir, cfg, fit_res)

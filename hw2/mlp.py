@@ -67,7 +67,6 @@ class MLP(nn.Module):
                     linear,
                     nonlins[layer]
                 ]
-                print(linear)
             else:
                 linear = nn.Linear(in_dim, out_dim, bias=True)
                 linear.weight.requires_grad = True

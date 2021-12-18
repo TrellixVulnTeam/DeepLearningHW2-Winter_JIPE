@@ -139,7 +139,7 @@ def cnn_experiment(
             channels.append(filterPerLayer)
     model_temp = model_cls(ds_train[0][0].shape, 10, channels=channels,
                            pool_every=pool_every, hidden_dims=hidden_dims,
-                           conv_params=dict(kernel_size=2, stride=1, padding=1),
+                           conv_params=dict(kernel_size=2, stride=1, padding=2),
                            activation_type='relu', pooling_type='avg', pooling_params=dict(kernel_size=2))
     model_temp = model_temp.to(device)
     model = ArgMaxClassifier(

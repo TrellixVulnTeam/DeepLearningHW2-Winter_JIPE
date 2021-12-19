@@ -361,15 +361,47 @@ class ResNet(CNN):
 
 
 class YourCNN(CNN):
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 in_size,
+                 out_classes,
+                 channels,
+                 pool_every,
+                 hidden_dims,
+                 batchnorm=False,
+                 dropout=0.0,
+                 bottleneck: bool = False,
+                 **kwargs, ):
         """
         See CNN.__init__
+        self,
+        in_size,
+        out_classes,
+        channels,
+        pool_every,
+        hidden_dims,
+        batchnorm=False,
+        dropout=0.0,
+        bottleneck: bool = False,
+        **kwargs,
         """
-        super().__init__(*args, **kwargs)
+        self.batchnorm = batchnorm
+        self.dropout = dropout
+        self.bottleneck = bottleneck
+        super().__init__(
+            in_size, out_classes, channels, pool_every, hidden_dims, **kwargs
+        )
 
+        self.resNetModel = ResNet(
+            in_size,
+            out_classes,
+            channels,
+            pool_every,
+            hidden_dims,
+            batchnorm,
+            dropout,
+            bottleneck=False)
         # TODO: Add any additional initialization as needed.
         # ====== YOUR CODE: ======
-
         # ========================
 
     # TODO: Change whatever you want about the CNN to try to
@@ -377,5 +409,6 @@ class YourCNN(CNN):
     #  For example, add batchnorm, dropout, skip connections, change conv
     #  filter sizes etc.
     # ====== YOUR CODE: ======
-
+    def _make_feature_extractor(self):
+        return self.resNetModel.feature_extractor
     # ========================

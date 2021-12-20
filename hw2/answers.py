@@ -64,6 +64,9 @@ but most of the iterations prior to the final one were quite scattered between 8
 3. Approximation error - we think that the approximation error of our model is fairly good. 
 we can see it in the decision boundary plot that the shape of the decision boundary is aprox. like we would draw out by hand.
  meaning that it resembles the h* function.
+ 
+ 
+ 
 """
 
 part1_q2 = r"""
@@ -71,7 +74,10 @@ part1_q2 = r"""
 
 we expect that the fnr will be higher then the fpr. 
 we can see in the first plot of the validation data, that there are more places where it makes sense for us to think
-that something orange is blue than the opposite. and that is why we expect that the FNR will be higher than the FPR
+that something orange is blue than the opposite. and that is why we expect that the FNR will be higher than the FPR.
+(the samples in the testset are mostly negative in the trainset but they are positive in the validset)
+
+
 """
 
 part1_q3 = r"""
@@ -84,6 +90,9 @@ part1_q3 = r"""
 2. in this case we would choose the "optimal" point on the ROC cover to be as close to fpr = 0 and fnr = 0.
 we know that the symptoms can be undetected until its to late and the patient can die if we wouldn't detect the disease early enough,
  so we prefer to pay for the expensive test and risk his life for the detection of the disease.
+ 
+ 
+ 
 """
 
 part1_q4 = r"""
@@ -166,13 +175,15 @@ part2_q1 = r"""
 part3_q1 = r"""
 **Your answer:**
 
+1. The depth produces the best results is when L=2. we think maybe it was complicated to express a good
+approximation of reality itself, but not too complex to suffer from vanishing gradients.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+
+2. for L=8 and L=16 we can see that the network wasn't trainable. 
+one way is adding loss function that are partial. we will add them to different parts of the network. 
+second way -we can think about skipping connections for a way that may be done to resolve it at least partially in that way it will use information that will not disappear as easily.
+
+
 
 """
 
@@ -180,12 +191,13 @@ part3_q2 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+
+we can see according to experiment 1.1 and 1.2 that there is a cetain spot where we get the best results. 
+where the model delivers the best results. if we increase the network size too much we get less good results.
+
+we can see from the graphs that when L=4, that an average has better results compared to others. 
+(the graph increases monotony). so maybe if we change to more data or different params it could be better.
+
 
 """
 
@@ -193,12 +205,10 @@ part3_q3 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+we can see that for all the other L except L=1, we get vanishing
+gradients- the network become too deep.
+for L=1 we can see that there is a certain spot which gives the best results and after that the results become less good.
+
 
 """
 
@@ -206,12 +216,9 @@ part3_q4 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+we can see that we succeeded to train deeper models without vanishing gradients.
+we can see that there is a decreasing in accuracy maybe because of the hyper params.  
+compared to experiments 1.1 and 1.3 it tooks Longer to train. we can use residual bottleneck blocks to reduce it.
 
 """
 

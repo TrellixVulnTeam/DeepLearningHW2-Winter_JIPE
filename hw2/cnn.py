@@ -399,7 +399,7 @@ class YourCNN(CNN):
                                      activation_type='lrelu',
                                      activation_params=dict(negative_slope=0.01))]
             if count == self.pool_every:
-                layers += [POOLINGS['avg'](**self.pooling_params)]
+                layers += [POOLINGS['avg'](kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)]
             i += count
             cur_in_channels = self.channels[i - 1]
         seq = nn.Sequential(*layers)

@@ -175,13 +175,18 @@ part2_q1 = r"""
 part3_q1 = r"""
 **Your answer:**
 
-1. The depth produces the best results is when L=2. we think maybe it was complicated to express a good
-approximation of reality itself, but not too complex to suffer from vanishing gradients.
+1. The depth that produces the best results is when L=4 this is based on the accuracy of the test batch even though the train set goot a lower accuracy score then L2.
+we can see that as a rule of thumb the best results can be achieved with sorter networks.
+perhaps the reason that our shorter networks received the best accuracy is because they were enough complicated but 
+not to much, that they aren't suffering from vanishing gradients.
 
 
 2. for L=8 and L=16 we can see that the network wasn't trainable. 
-one way is adding loss function that are partial. we will add them to different parts of the network. 
-second way -we can think about skipping connections for a way that may be done to resolve it at least partially in that way it will use information that will not disappear as easily.
+the reason may be due to vanishing gradients (=vanishing information) and the network is no longer is training the in
+ order to minimize the loss value, and we get a model which isn't better then a random guess.
+    1. one way is adding loss function that are partial.
+we will add them to different parts of the network, and by that creating "skipp connections" for loss functions.
+    2. we can think about adding skipping connections like in Part 2 - in that way it will use information that will not disappear as easily.
 
 
 
@@ -190,14 +195,14 @@ second way -we can think about skipping connections for a way that may be done t
 part3_q2 = r"""
 **Your answer:**
 
+looking at the results from L=2,4 we can see that we got +/- the same accuracy scores on the test set - 
+with L=4 is leading by a small margin.
+in addition we see that after epoch 7-8 we are starting to overfit to our training set while the test set is plateauing.
+we can also see that there is no major affect from the different conv sizes. 
 
+looking at L=8, we can see that this net architecture isn't trainable. 
 
-we can see according to experiment 1.1 and 1.2 that there is a cetain spot where we get the best results. 
-where the model delivers the best results. if we increase the network size too much we get less good results.
-
-we can see from the graphs that when L=4, that an average has better results compared to others. 
-(the graph increases monotony). so maybe if we change to more data or different params it could be better.
-
+this is similar results from what we got in experiment 1 - were after L=4 all of the settings weren't trainable.
 
 """
 
@@ -206,9 +211,14 @@ part3_q3 = r"""
 
 
 we can see that for all the other L except L=1, we get vanishing
-gradients- the network become too deep.
-for L=1 we can see that there is a certain spot which gives the best results and after that the results become less good.
+gradients- the network become too deep :(
 
+for L=1 we can see that after epoch 10 the accuracy results are plateauing and the model is starting to overfit to the 
+train set. 
+
+we can see that the rule of thumb 
+(were after a certain point of architecture complexity the networks are starting to be un trainable)
+ that we absorbed in the previous experiments can be seen also in this experiment.
 
 """
 
@@ -218,20 +228,18 @@ part3_q4 = r"""
 
 we can see that we succeeded to train deeper models without vanishing gradients.
 we can see that there is a decreasing in accuracy maybe because of the hyper params.  
-compared to experiments 1.1 and 1.3 it tooks Longer to train. we can use residual bottleneck blocks to reduce it.
+compared to experiments 1.1 , 1.2 and 1.3 the results from the trainable architectures are lower in a significant way.
 
 """
 
 part3_q5 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1. first of all, we replicated the functionality of the ResNet and we also used batchNorm and dropout.
+ in addition we used pool_every=2 and used 2 layers of 200 dim in the FC stage. 
+ the main idea was to deal with the vanishing gradients that we saw in the experiments. 
+2. we see significant improvement both in the scores - now in the first time we are getting accuracy scores of above 80% in the test set. 
+and also for the first time we are getting trainable networks even with complex and long architectures - 
+which we can link to the addition of the resNet.
 """
 # ==============

@@ -111,6 +111,7 @@ class CNN(nn.Module):
             # ====== YOUR CODE: ======
             input_feature_extractor = torch.randint(0, 1, (1, self.in_size[0], self.in_size[1], self.in_size[2]),
                                                     dtype=torch.float)
+            print(input_feature_extractor.shape)
             input_classifier = self.feature_extractor(input_feature_extractor)
             return input_classifier.shape[1] * input_classifier.shape[2] * input_classifier.shape[3]
             # ========================
@@ -398,7 +399,7 @@ class YourCNN(CNN):
                                      activation_type='lrelu',
                                      activation_params=dict(negative_slope=0.01))]
             if count == self.pool_every:
-                layers += [POOLINGS['max'](kernel_size=2, stride=2, padding=0)]
+                layers += [POOLINGS['max'](kernel_size=2, stride=2, padding=6)]
             i += count
             cur_in_channels = self.channels[i - 1]
         seq = nn.Sequential(*layers)

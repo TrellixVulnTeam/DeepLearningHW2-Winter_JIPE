@@ -71,7 +71,7 @@ class MLP(nn.Module):
                 linear = nn.Linear(in_dim, out_dim, bias=True)
                 linear.weight.requires_grad = True
                 linear.bias.requires_grad = True
-                if layer == 'logsoftmax':
+                if nonlins[layer] == 'logsoftmax' or nonlins[layer] == 'softmax':
                     layers += [
                         linear,
                         ACTIVATIONS[nonlins[layer]](dim=1)

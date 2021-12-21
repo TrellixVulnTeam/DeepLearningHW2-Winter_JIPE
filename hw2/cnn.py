@@ -341,7 +341,7 @@ class ResNet(CNN):
                                             dropout=self.dropout, activation_type=self.activation_type,
                                             activation_params=self.activation_params)]
                 i += count
-                if count == self.pool_every:
+                if count == self.pool_every and i < len(self.channels) - count:
                     layers += [POOLINGS[self.pooling_type](**self.pooling_params)]
 
                 cur_in_channels = self.channels[i - 1]

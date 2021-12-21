@@ -374,6 +374,7 @@ class YourCNN(CNN):
         self.batchnorm = batchnorm
         self.dropout = dropout
         self.bottleneck = bottleneck
+        self.pooling_params = dict(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
         super().__init__(
             in_size, out_classes, channels, pool_every, hidden_dims, **kwargs
         )

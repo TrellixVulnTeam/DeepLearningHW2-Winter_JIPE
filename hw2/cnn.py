@@ -64,7 +64,6 @@ class CNN(nn.Module):
         if activation_type not in ACTIVATIONS or pooling_type not in POOLINGS:
             raise ValueError("Unsupported activation or pooling type")
         self.feature_extractor = self._make_feature_extractor()
-        print(f'{self.feature_extractor=}')
         self.mlp = self._make_mlp()
 
     def _make_feature_extractor(self):
@@ -111,7 +110,6 @@ class CNN(nn.Module):
             # ====== YOUR CODE: ======
             input_feature_extractor = torch.randint(0, 1, (1, self.in_size[0], self.in_size[1], self.in_size[2]),
                                                     dtype=torch.float)
-            print(f'{input_feature_extractor.shape=}')
             input_classifier = self.feature_extractor(input_feature_extractor)
             return input_classifier.shape[1] * input_classifier.shape[2] * input_classifier.shape[3]
             # ========================

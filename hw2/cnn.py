@@ -371,35 +371,12 @@ class YourCNN(CNN):
                  dropout=0.0,
                  bottleneck: bool = False,
                  **kwargs, ):
-        """
-        See CNN.__init__
-        self,
-        in_size,
-        out_classes,
-        channels,
-        pool_every,
-        hidden_dims,
-        batchnorm=False,
-        dropout=0.0,
-        bottleneck: bool = False,
-        **kwargs,
-        """
         self.batchnorm = batchnorm
         self.dropout = dropout
         self.bottleneck = bottleneck
         super().__init__(
             in_size, out_classes, channels, pool_every, hidden_dims, **kwargs
         )
-
-        self.resNetModel = ResNet(
-            in_size,
-            out_classes,
-            channels,
-            pool_every,
-            hidden_dims,
-            batchnorm,
-            dropout,
-            bottleneck=False)
         # TODO: Add any additional initialization as needed.
         # ====== YOUR CODE: ======
         # ========================
@@ -410,5 +387,20 @@ class YourCNN(CNN):
     #  filter sizes etc.
     # ====== YOUR CODE: ======
     def _make_feature_extractor(self):
-        return self.resNetModel.feature_extractor
+        in_channels, in_h, in_w, = tuple(self.in_size)
+        layers = []
+        i = 0
+        cur_in_channels = in_channels
+        while i < len(self.channels):
+            count = min(self.pool_every, len(self.channels) - i)
+            layers += [ResidualBlock(in_channels=cur_in_channels, channels=self.channels[i:i + self.pool_every],
+                                     kernel_sizes=[3] * count, batchnorm=True, dropout=0.1,
+                                     activation_type='lrelu',
+                                     activation_params=dict(negative_slope=0.01))]
+            if count == self.pool_every:
+                layers += [POOLINGS['avg'](**self.pooling_params)]
+            i += count
+            cur_in_channels = self.channels[i - 1]
+        seq = nn.Sequential(*layers)
+        return seq
     # ========================

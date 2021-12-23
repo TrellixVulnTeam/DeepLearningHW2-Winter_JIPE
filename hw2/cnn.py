@@ -331,7 +331,7 @@ class ResNet(CNN):
                 layers += [POOLINGS[self.pooling_type](**self.pooling_params)]
             i += count
             cur_in_channels = self.channels[i - 1]
-            while i < len(self.channels) - count:
+            while i <= len(self.channels) - count:
                 layers += [
                     ResidualBottleneckBlock(in_out_channels=cur_in_channels,
                                             inner_channels=[self.channels[i + 1]],
@@ -339,7 +339,7 @@ class ResNet(CNN):
                                             dropout=self.dropout, activation_type=self.activation_type,
                                             activation_params=self.activation_params)]
                 i += count
-                if count == self.pool_every and i < len(self.channels) - count:
+                if count == self.pool_every:
                     layers += [POOLINGS[self.pooling_type](**self.pooling_params)]
 
                 cur_in_channels = self.channels[i - 1]
